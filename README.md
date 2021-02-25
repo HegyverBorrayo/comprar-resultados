@@ -6,4 +6,4 @@ con el otro archivo_
 _Se deben configuar dos el path que contendra multiples archivos y el path del archivo a comparar_
 
 ## Bugs
-* Duplica los datos
+* Duplica los datos, pero se soluciona si solo te quedas con la mitad de tu archivo +1
