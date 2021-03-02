@@ -4,13 +4,19 @@ const path = require('path');
 
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 const csvWriter = createCsvWriter({
-  path: './ges/output/outenrollment1.csv',
+  path: './ges/output/carnet4-outenrollment1.csv',
   header: [
-    {id: 'email', title: 'email'},
-    {id: 'phone', title: 'phone'},
-    {id: 'ccarrera', title: 'ccarrera'},
-    {id: 'carrera', title: 'carrera'},
-    {id: 'filename', title: 'filename'},
+      {id: 'tipo', title: 'tipo'},
+      {id: 'correo', title: 'correo'},
+      {id: 'ges', title: 'ges'},
+      {id: 'carnet', title: 'carnet'},
+      {id: 'ccarrera', title: 'ccarrera'},
+      {id: 'carrera', title: 'carrera'},
+      {id: 'nombres', title: 'nombres'},
+      {id: 'apellidos', title: 'apellidos'},
+      {id: 'dpi', title: 'dpi'},
+      {id: 'telefono', title: 'telefono'},
+      {id: 'filename', title: 'filename'}
   ]
 });
 
@@ -51,20 +57,30 @@ function filewalker(dir, done) {
                             let interestedPhone = row['TELÉFONO'];
                             let nameFile = path.basename(file)
 
-                            let interestedInfo = {
-                                email : interestedEmail,
-                                phone : interestedPhone,
-                                filename : nameFile,
-                            }
                             
-                            let found = dataEnrollmentFile.find(correo => correo.CORREO == interestedEmail)
+                            let found = dataEnrollmentFile.find(correo => ((correo.CORREO === interestedEmail) || (correo.TELEFONO == interestedPhone)) && correo.filename !== nameFile)
                             if (found ) {
-                                if (found.CORREO !== "" && interestedEmail !== "") {
-                                    let foundI = dataOutput.find(correo => correo.email == interestedEmail)
+                                if ((found.CORREO !== "" && interestedEmail !== "")) {
+                                    let foundI = dataOutput.find(correoO => (correoO.email == interestedEmail) || (correoO.phone == interestedPhone) || (correoO.phone == interestedPhone && correoO.email == interestedEmail))
+
                                     if (foundI) {
+                                        console.log("lo encuentraaaaaaa")
                                     } else {
-                                        interestedInfo.ccarrera = found.CCARRERA,
-                                        interestedInfo.carrera = found.CARRERA,
+                                        //console.log(found.CORREO + "-----"+interestedEmail);
+                                        
+                                        let interestedInfo = {
+                                            tipo : found.TIPO,
+                                            ccarrera : found.CCARRERA,
+                                            carrera : found.CARRERA,
+                                            carnet : found.CARNET,
+                                            nombres : found.NOMBRES,
+                                            apellidos : found.APELLIDOS,
+                                            dpi : found.DPI,
+                                            correo : found.CORREO,
+                                            ges : found.GES,
+                                            telefono : found.TELEFONO,
+                                            filename : nameFile
+                                        }
                                         dataOutput.push(interestedInfo);
                                     }
                                 }
