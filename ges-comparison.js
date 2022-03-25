@@ -4,7 +4,7 @@ const path = require('path');
 
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 const csvWriter = createCsvWriter({
-  path: './ges/output/carnet4-outenrollment1.csv',
+  path: './ges/output.csv',
   header: [
       {id: 'tipo', title: 'tipo'},
       {id: 'correo', title: 'correo'},
@@ -23,7 +23,7 @@ const csvWriter = createCsvWriter({
 let dataOutput = [];
 let dataEnrollmentFile = [];
 
-let fileEnrollment = './ges/enrollment/Primer ingreso - FACTI 2021  - Listado.csv';
+let fileEnrollment = '/home/erehebo/Downloads/inscritos-2022.csv';
 
 function filewalker(dir, done) {
     let results = [];
@@ -46,6 +46,12 @@ function filewalker(dir, done) {
             fs.stat(file, function(err, stat){
                 // If directory, execute a recursive call
                 if (stat && stat.isDirectory()) {
+                    results.push(file);
+
+                    filewalker(file, function(err, res){
+                        results = results.concat(res);
+                        if (!--pending) done(null, results);
+                    });
                 } else {
                     results.push(file);
 
@@ -54,9 +60,17 @@ function filewalker(dir, done) {
                         .pipe(cvs())
                         .on('data', (row) => {
                             let interestedEmail = row['CORREO'];
+                            interestedEmail = interestedEmail ? interestedEmail : row['Correo electrónico'];
+                            interestedEmail = interestedEmail ? interestedEmail : row['Correo Personal'];
                             let interestedPhone = row['TELÉFONO'];
+                            interestedPhone = interestedPhone ? interestedPhone : row['Número de teléfono'];
+                            interestedPhone = interestedPhone ? interestedPhone : row['Teléfono'];
+                            interestedPhone = interestedPhone ? interestedPhone : row['TELEFONO'];
                             let nameFile = path.basename(file)
-
+                            if (!interestedEmail && !interestedPhone) {
+                                console.log(`este no se pudo analizar: ${nameFile}`);
+                                console.log(row)
+                            }
                             
                             let found = dataEnrollmentFile.find(correo => ((correo.CORREO === interestedEmail) || (correo.TELEFONO == interestedPhone)) && correo.filename !== nameFile)
                             if (found ) {
@@ -64,9 +78,10 @@ function filewalker(dir, done) {
                                     let foundI = dataOutput.find(correoO => (correoO.email == interestedEmail) || (correoO.phone == interestedPhone) || (correoO.phone == interestedPhone && correoO.email == interestedEmail))
 
                                     if (foundI) {
-                                        console.log("lo encuentraaaaaaa")
+                                        //console.log("lo encuentraaaaaaa")
                                     } else {
                                         //console.log(found.CORREO + "-----"+interestedEmail);
+                                        //console.log(found)
                                         
                                         let interestedInfo = {
                                             tipo : found.TIPO,
@@ -111,7 +126,7 @@ fs.createReadStream(fileEnrollment)
         dataEnrollmentFile.push(row)
     }).on('end', () => {
         console.log("termina")
-        filewalker("./ges/facti", function(err, data){
+        filewalker("/home/erehebo/Downloads/solicitantes", function(err, data){
             if(err){
                 throw err;
             }
