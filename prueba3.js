@@ -4,7 +4,7 @@ const path = require('path');
 
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 const csvWriter = createCsvWriter({
-  path: './output/output3.csv',
+  path: './output/eventos-repetidos.csv',
   header: [
       {id: 'tipo', title: 'tipo'},
       {id: 'correo', title: 'correo'},
@@ -16,7 +16,8 @@ const csvWriter = createCsvWriter({
       {id: 'apellidos', title: 'apellidos'},
       {id: 'dpi', title: 'dpi'},
       {id: 'telefono', title: 'telefono'},
-      {id: 'filename', title: 'filename'}
+      {id: 'filename', title: 'filename'},
+      {id: 'etiquetas', title: 'etiquetas'}
   ]
 });
 
@@ -55,6 +56,7 @@ function filewalker(dir, done) {
                         const { "Nombres": name, "Nombres":_name, "Nombre": __name ,"Apellidos": lastname } = row;
                         const { "Número de teléfono": _phone, "TELÉFONO": __phone, "TELEFONO": ___phone, "Teléfono": ____phone } = row;
                         const { "CORREO": _email, "Correo Personal": __email, "Correo electrónico": ___email,} = row;
+                        const { "Etiquetas": etiqueta } = row;
                         const nameFile = path.basename(file);
 
                         const extension = path.extname(file);
@@ -64,6 +66,7 @@ function filewalker(dir, done) {
                                 nombres: name || _name || __name,
                                 apellidos: lastname,
                                 phone: _phone || __phone || ___phone || ____phone,
+                                etiqueta: etiqueta,
                                 filename : nameFile
                             }
                             
@@ -82,6 +85,8 @@ function filewalker(dir, done) {
                                             carnet,
                                             dpi,
                                             ges,
+                                            etiquetas: infoUser.etiqueta,
+                                            telefono: infoUser.phone,
                                             correo: infoUser.email,
                                             ...infoUser
                                         }
@@ -110,7 +115,7 @@ fs.createReadStream(fileEnrollment)
 .on('data', (row) => {
     dataEnrollmentFile.push(row)
 }).on('end', async() => {
-    const a = await filewalker("./interesados", function(err, data){
+    const a = await filewalker("./interesados/Eventos", function(err, data){
         if(err){
             throw err;
         }
