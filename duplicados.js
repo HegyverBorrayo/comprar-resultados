@@ -7,7 +7,7 @@ let dataOutput = [];
 let dataEnrollmentFile = [];
 
 const csvWriter = createCsvWriter({
-    path: './ges/output/output-sin-duplicados.csv',
+    path: './output/eventos.csv',
     header: [
         {id: 'tipo', title: 'tipo'},
         {id: 'correo', title: 'correo'},
@@ -19,12 +19,13 @@ const csvWriter = createCsvWriter({
         {id: 'apellidos', title: 'apellidos'},
         {id: 'dpi', title: 'dpi'},
         {id: 'telefono', title: 'telefono'},
-        {id: 'filename', title: 'filename'}
+        {id: 'filename', title: 'filename'},
+        {id: 'etiquetas', title: 'etiquetas'}
     ]
   });
 
 //enrollment file
-let fileOutput = './ges/output/carnet4-outenrollment1.csv';
+let fileOutput = './output/eventos-repetidos.csv';
 fs.createReadStream(fileOutput)
 .pipe(cvs())
 .on('data', (row) => {
